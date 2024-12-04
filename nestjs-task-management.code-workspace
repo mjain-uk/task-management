@@ -6,7 +6,7 @@
   ],
   "settings": {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode", // Prettier as default formatter
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint", // Prettier as default formatter
     "eslint.format.enable": true, // Enable ESLint as a formatter
     "eslint.validate": [
       // Validate specific file types
