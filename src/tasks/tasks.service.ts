@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { v7 as uuid } from 'uuid';
-import { CreateTaskDto } from './dtos/task-service.dto';
+import { CreateTaskDto, UpdateTaskDto } from './dtos/task-service.dto';
 import { Task, TaskStatus } from './tasks.model';
 
 @Injectable()
@@ -42,8 +42,9 @@ export class TasksService {
     this.tasks = this.tasks.filter(({ id }) => id !== taskId);
   }
 
-  patchTask(taskId: string, partialTaskDto: Partial<CreateTaskDto>): Task {
+  patchTask(taskId: string, updateTaskDto: UpdateTaskDto): Task {
     const taskToUpdate = this.getTaskById(taskId);
-    return { ...taskToUpdate, ...partialTaskDto };
+
+    return { ...taskToUpdate, ...updateTaskDto };
   }
 }

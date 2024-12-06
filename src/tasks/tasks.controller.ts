@@ -7,7 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateTaskDto } from './dtos/task-service.dto';
+import { CreateTaskDto, UpdateTaskDto } from './dtos/task-service.dto';
 import { Task } from './tasks.model';
 import { TasksService } from './tasks.service';
 
@@ -34,9 +34,9 @@ export class TasksController {
   patchTask(
     @Param('id') id: string,
     @Body()
-    partialCreateDto: Partial<CreateTaskDto>,
+    updateTaskDto: UpdateTaskDto,
   ): Task {
-    return this.tasksService.patchTask(id, partialCreateDto);
+    return this.tasksService.patchTask(id, updateTaskDto);
   }
 
   @Post()
