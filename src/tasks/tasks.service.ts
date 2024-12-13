@@ -1,50 +1,49 @@
-import { Injectable } from '@nestjs/common';
-import { v7 as uuid } from 'uuid';
-import { CreateTaskDto, UpdateTaskDto } from './dtos/task-service.dto';
-import { Task, TaskStatus } from './tasks.model';
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+import {
+  CreateTaskDto,
+  TaskFilterDto,
+  UpdateTaskDto,
+} from './dtos/task-service.dto';
+import { TaskRepository } from './tasks.repository';
+
+import { Task } from './task.entity';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [];
+  constructor(private taskRepository: TaskRepository) {}
 
-  /**
-   * Method to return all tasks
-   * @returns Task[]
-   */
-  getAllTasks(): Task[] {
-    return this.tasks;
+  getAllTasks(filters: TaskFilterDto): Promise<Task[]> {
+    return this.taskRepository.findAllTasks(filters);
   }
 
-  /**
-   *
-   * @param createTaskDto - title:string, description:string
-   * @returns Task Object
-   */
-  createNewTask(createTaskDto: CreateTaskDto): Task {
-    const { title, description } = createTaskDto;
-
-    const taskObject: Task = {
-      id: uuid(),
-      title,
-      description,
-      status: TaskStatus.OPEN,
-    };
-    this.tasks.push(taskObject);
-
-    return taskObject;
+  createNewTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    return this.taskRepository.createTask(createTaskDto);
   }
 
-  getTaskById(taskId: string): Task {
-    return this.tasks.find(({ id }) => id === taskId);
+  async getTaskById(taskId: string): Promise<Task> {
+    const found = this.taskRepository.findOneBy({ id: taskId });
+
+    if (!found) {
+      throw new NotFoundException();
+    }
+    return found;
   }
 
-  deleteTask(taskId: string): void {
-    this.tasks = this.tasks.filter(({ id }) => id !== taskId);
+  async deleteTask(taskId: string): Promise<void> {
+    const { affected } = await this.taskRepository.delete({ id: taskId });
+    if (affected !== 1) {
+      throw new NotFoundException();
+    }
   }
 
-  patchTask(taskId: string, updateTaskDto: UpdateTaskDto): Task {
-    const taskToUpdate = this.getTaskById(taskId);
-
-    return { ...taskToUpdate, ...updateTaskDto };
+  async patchTask(id: string, updateTaskDto: UpdateTaskDto): Promise<Task> {
+    // Update the task
+    const { affected } = await this.taskRepository.update(id, updateTaskDto);
+    if (affected !== 1) {
+      throw new NotFoundException();
+    }
+    // Fetch and return the updated task
+    return await this.taskRepository.findOneBy({ id });
   }
 }
