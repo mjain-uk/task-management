@@ -1,5 +1,5 @@
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { NestFactory, Reflector } from '@nestjs/core';
 import * as dotenv from 'dotenv';
 import { AppModule } from './app.module';
 
@@ -11,6 +11,9 @@ async function bootstrap() {
 
   // Initiate Auto Validation
   app.useGlobalPipes(new ValidationPipe());
+
+  // Use class serializer interceptor
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   await app.listen(port);
   console.log(`Application is running on: http://localhost:${port}`);
