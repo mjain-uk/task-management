@@ -8,6 +8,7 @@ import {
 import { TaskRepository } from './tasks.repository';
 
 import { Task } from './task.entity';
+import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class TasksService {
@@ -17,8 +18,8 @@ export class TasksService {
     return this.taskRepository.findAllTasks(filters);
   }
 
-  createNewTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.taskRepository.createTask(createTaskDto);
+  createNewTask(createTaskDto: CreateTaskDto, user: User): Promise<Task> {
+    return this.taskRepository.createTask(createTaskDto, user);
   }
 
   async getTaskById(taskId: string): Promise<Task> {
